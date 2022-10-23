@@ -4,6 +4,7 @@ import com.minabeshara.astroboom.R
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.databinding.BindingAdapter
+import com.squareup.picasso.Picasso
 
 @BindingAdapter("statusIcon")
 fun bindAsteroidStatusImage(imageView: ImageView, isHazardous: Boolean) {
@@ -44,5 +45,8 @@ fun bindTextViewToDisplayVelocity(textView: TextView, number: Double) {
 @BindingAdapter("imageUrl")
 fun bindImageOfDay(imgView: ImageView, imgUrl: String?) {
     imgUrl?.let {
+        Picasso.with(imgView.context)
+            .load(imgUrl)
+            .into(imgView)
     }
 }

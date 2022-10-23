@@ -1,5 +1,6 @@
 package com.minabeshara.astroboom.api
 
+import com.minabeshara.astroboom.model.PictureOfDay
 import com.minabeshara.astroboom.utils.Constants.BASE_URL
 import com.minabeshara.astroboom.utils.QueryConverterFactory
 import com.squareup.moshi.Moshi
@@ -17,6 +18,7 @@ private val moshi = Moshi.Builder()
 
 private val retrofit = Retrofit.Builder()
     .addConverterFactory(ScalarsConverterFactory.create())
+    .addConverterFactory(MoshiConverterFactory.create(moshi))
     .baseUrl(BASE_URL)
     .build()
 
@@ -27,6 +29,11 @@ interface NasaApiService{
         @Query("start_date") start_date: String,
         @Query("end_date") end_date: String,
     ) : String
+
+    @GET("planetary/apod")
+    suspend fun getImageOfDay(
+        @Query("api_key") api_key :String
+    ) : PictureOfDay
 }
 
 object NasaApi {

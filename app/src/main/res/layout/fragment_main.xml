@@ -4,6 +4,9 @@
 
     <data>
         <variable
+            name="image"
+            type="com.minabeshara.astroboom.model.PictureOfDay" />
+        <variable
             name="viewModel"
             type="com.minabeshara.astroboom.main.MainViewModel" />
 
@@ -26,6 +29,7 @@
                 android:id="@+id/activity_main_image_of_the_day"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
+                imageUrl="@{image.url}"
                 android:adjustViewBounds="true"
                 android:scaleType="centerCrop"
                 app:srcCompat="@drawable/placeholder_picture_of_day"/>

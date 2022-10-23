@@ -31,7 +31,9 @@ class MainFragment : Fragment() {
             adapter.data = list
         }
         binding.asteroidRecycler.adapter = adapter
-
+        viewModel.imageOfDay.observe(viewLifecycleOwner){
+            binding.image = it
+        }
         return binding.root
     }
 

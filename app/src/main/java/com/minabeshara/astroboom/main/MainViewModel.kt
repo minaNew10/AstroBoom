@@ -8,6 +8,7 @@ import androidx.lifecycle.viewModelScope
 import com.minabeshara.astroboom.BuildConfig
 import com.minabeshara.astroboom.api.NasaApi
 import com.minabeshara.astroboom.model.Asteroid
+import com.minabeshara.astroboom.model.PictureOfDay
 import com.minabeshara.astroboom.utils.Constants
 import com.minabeshara.astroboom.utils.parseAsteroidsJsonResult
 import kotlinx.coroutines.launch
@@ -23,8 +24,14 @@ class MainViewModel : ViewModel() {
     val response: LiveData<String>
         get() = _response
 
+    private val _imageOfDay = MutableLiveData<PictureOfDay>()
+
+    val imageOfDay: LiveData<PictureOfDay>
+        get() = _imageOfDay
+
     init {
         getAsteroids()
+        getImageOfDay()
     }
 
     private fun getAsteroids(){
@@ -43,6 +50,14 @@ class MainViewModel : ViewModel() {
             )
             Log.i("TAG", "getAsteroids: ")
             _response.value = jsonResult
+        }
+    }
+
+    private fun getImageOfDay(){
+        viewModelScope.launch {
+            _imageOfDay.value  = NasaApi.retrofitService.getImageOfDay(
+                BuildConfig.API_KEY
+            )
         }
     }
 
