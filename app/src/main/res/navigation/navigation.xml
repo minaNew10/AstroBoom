@@ -9,5 +9,17 @@
         android:id="@+id/mainFragment"
         android:name="com.minabeshara.astroboom.main.MainFragment"
         android:label="fragment_main"
-        tools:layout="@layout/fragment_main" />
+        tools:layout="@layout/fragment_main">
+        <action
+            android:id="@+id/action_mainFragment_to_detailsFragment"
+            app:destination="@id/detailsFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/detailsFragment"
+        android:name="com.minabeshara.astroboom.detail.DetailsFragment"
+        android:label="DetailsFragment">
+        <argument
+            android:name="selectedAsteroid"
+            app:argType="com.minabeshara.astroboom.model.Asteroid" />
+    </fragment>
 </navigation>

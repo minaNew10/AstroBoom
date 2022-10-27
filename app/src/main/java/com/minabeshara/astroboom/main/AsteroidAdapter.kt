@@ -6,7 +6,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.minabeshara.astroboom.databinding.ItemAsteriodBinding
 import com.minabeshara.astroboom.model.Asteroid
 
-class AsteroidAdapter : RecyclerView.Adapter<AsteroidAdapter.ViewHolder>() {
+class AsteroidAdapter(private val clickListener: AsteroidClickListener) : RecyclerView.Adapter<AsteroidAdapter.ViewHolder>() {
 
     var data = listOf<Asteroid>()
         set(value) {
@@ -19,7 +19,7 @@ class AsteroidAdapter : RecyclerView.Adapter<AsteroidAdapter.ViewHolder>() {
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder.bind(data[position])
+        holder.bind(data[position], clickListener)
     }
 
     class ViewHolder private constructor(val binding: ItemAsteriodBinding) :
@@ -32,8 +32,9 @@ class AsteroidAdapter : RecyclerView.Adapter<AsteroidAdapter.ViewHolder>() {
             }
         }
 
-        fun bind(item: Asteroid) {
+        fun bind(item: Asteroid,clickListener: AsteroidClickListener) {
             binding.asteroid = item
+            binding.clickListener = clickListener
             binding.executePendingBindings()
         }
     }
@@ -41,4 +42,8 @@ class AsteroidAdapter : RecyclerView.Adapter<AsteroidAdapter.ViewHolder>() {
     override fun getItemCount(): Int {
         return data.size
     }
+}
+
+class AsteroidClickListener(private val listener: (asteroid : Asteroid) -> Unit){
+    fun onClick(asteroid: Asteroid) = listener(asteroid)
 }

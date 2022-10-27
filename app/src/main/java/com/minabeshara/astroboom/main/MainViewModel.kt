@@ -10,12 +10,8 @@ import com.minabeshara.astroboom.api.NasaApi
 import com.minabeshara.astroboom.model.Asteroid
 import com.minabeshara.astroboom.model.PictureOfDay
 import com.minabeshara.astroboom.utils.Constants
-import com.minabeshara.astroboom.utils.parseAsteroidsJsonResult
 import kotlinx.coroutines.launch
-import org.json.JSONObject
 import java.text.SimpleDateFormat
-import java.time.LocalDate
-import java.time.format.DateTimeFormatter
 import java.util.*
 
 class MainViewModel : ViewModel() {
@@ -29,9 +25,24 @@ class MainViewModel : ViewModel() {
     val imageOfDay: LiveData<PictureOfDay>
         get() = _imageOfDay
 
+    private val _navigateToAsteroidDetails = MutableLiveData<Asteroid?>()
+    val navigateToAsteroidDetails
+        get() = _navigateToAsteroidDetails
+
+    private val _progressDialogVisibilty= MutableLiveData<Boolean>()
+    val progressDialogVisibilty
+        get() = _progressDialogVisibilty
+
     init {
         getAsteroids()
         getImageOfDay()
+        viewProgressDialog()
+    }
+    fun viewProgressDialog(){
+        _progressDialogVisibilty.value = true
+    }
+    fun hideProgressDialog(){
+        _progressDialogVisibilty.value = false
     }
 
     private fun getAsteroids(){
@@ -59,6 +70,13 @@ class MainViewModel : ViewModel() {
                 BuildConfig.API_KEY
             )
         }
+    }
+
+    fun onAsteroidClicked(asteroid: Asteroid){
+        _navigateToAsteroidDetails.value = asteroid
+    }
+    fun onAsteroidDetailsNavigated() {
+        _navigateToAsteroidDetails.value = null
     }
 
 }

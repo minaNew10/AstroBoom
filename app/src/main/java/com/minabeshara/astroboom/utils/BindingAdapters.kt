@@ -43,9 +43,9 @@ fun bindTextViewToDisplayVelocity(textView: TextView, number: Double) {
 }
 
 @BindingAdapter("imageUrl")
-fun bindImageOfDay(imgView: ImageView, imgUrl: String?) {
+fun bindImageOfDay(imgView: ImageView?, imgUrl: String?) {
     imgUrl?.let {
-        Picasso.with(imgView.context)
+        Picasso.with(imgView?.context)
             .load(imgUrl)
             .into(imgView)
     }
