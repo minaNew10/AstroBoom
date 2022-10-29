@@ -48,6 +48,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text="@string/close_approach_data_title"
+                        android:contentDescription="@string/close_approach_data_title"
                         android:textColor="@color/default_text_color" />
 
                     <TextView
@@ -85,6 +86,7 @@
                             android:layout_height="wrap_content"
                             android:layout_marginTop="4dp"
                             android:textColor="@color/default_text_color"
+                            android:contentDescription="@string/astronomica_unit_explanation"
                             app:astronomicalUnitText="@{asteroid.absoluteMagnitude}"
                             tools:text="25.126 au" />
                     </LinearLayout>
@@ -118,6 +120,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="16dp"
+
                     android:text="@string/relative_velocity_title"
                     android:textColor="@color/default_text_color" />
 
