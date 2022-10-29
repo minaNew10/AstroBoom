@@ -1,6 +1,7 @@
 package com.minabeshara.astroboom.repository
 
 import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import com.minabeshara.astroboom.BuildConfig
 import com.minabeshara.astroboom.api.NasaApi
 import com.minabeshara.astroboom.database.AsteroidsDatabase
@@ -16,6 +17,7 @@ import java.util.*
 
 class AsteroidsRepository(private val database: AsteroidsDatabase) {
     val asteroids: LiveData<List<Asteroid>> = database.asteroidDao.getAsteroids()
+    var oldAsteroids : List<Asteroid>? = mutableListOf()
     val pictureOfDay : LiveData<PictureOfDay> = database.asteroidDao.getPictureOfDay()
     suspend fun refreshAsteroids() {
         val calendar = Calendar.getInstance()
@@ -30,7 +32,9 @@ class AsteroidsRepository(private val database: AsteroidsDatabase) {
             val jsonResult = NasaApi.retrofitService.getAsteroids(
                 BuildConfig.API_KEY, today, endDay
             )
+            oldAsteroids  = asteroids.value
             val list = parseAsteroidsJsonResult(JSONObject(jsonResult))
+            database.asteroidDao.deleteAllAsteroids()
             database.asteroidDao.insertAll(list)
         }
     }

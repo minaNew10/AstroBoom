@@ -11,8 +11,8 @@ class MainViewModel(app: Application) : ViewModel() {
 
     private val asteroidsRepository = AsteroidsRepository(getDatabase(app))
 
-    val asteroids = asteroidsRepository.asteroids
-
+    val newAsteroids = asteroidsRepository.asteroids
+    val oldAsteroids = asteroidsRepository.oldAsteroids
     val pictureOfDay = asteroidsRepository.pictureOfDay
 
     private val _navigateToAsteroidDetails = MutableLiveData<Asteroid?>()

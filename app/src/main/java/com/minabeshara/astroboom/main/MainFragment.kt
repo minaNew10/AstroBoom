@@ -1,9 +1,10 @@
 package com.minabeshara.astroboom.main
 
 import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
+import android.widget.Toast
+import androidx.core.view.MenuHost
+import androidx.core.view.MenuProvider
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -18,6 +19,8 @@ class MainFragment : Fragment() {
         val activity = requireNotNull(activity)
         MainViewModel.ViewModelFactory(activity.application)
     }
+
+    private lateinit var adapter: AsteroidAdapter
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
@@ -38,18 +41,18 @@ class MainFragment : Fragment() {
                 viewModel.onAsteroidDetailsNavigated()
             }
         }
-        val adapter = AsteroidAdapter(AsteroidClickListener { asteroid ->
+        adapter = AsteroidAdapter(AsteroidClickListener { asteroid ->
             viewModel.onAsteroidClicked(asteroid)
         })
         binding.asteroidRecycler.adapter = adapter
 
 
-        viewModel.asteroids.observe(viewLifecycleOwner) {
+        viewModel.newAsteroids.observe(viewLifecycleOwner) {
             if (it.isNotEmpty()) {
                 viewModel.hideProgressDialog()
                 adapter.data = it
+                adapter.notifyDataSetChanged()
             }
-            adapter.notifyDataSetChanged()
         }
         viewModel.progressDialogVisibility.observe(viewLifecycleOwner) { visible ->
             if (visible) {
@@ -59,6 +62,44 @@ class MainFragment : Fragment() {
             }
         }
         return binding.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        val menuHost: MenuHost = requireActivity()
+        menuHost.addMenuProvider(object : MenuProvider {
+            override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
+                menuInflater.inflate(R.menu.date_menu, menu)
+            }
+
+            override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
+                return when (menuItem.itemId) {
+                    R.id.show_new -> {
+                        viewModel.newAsteroids.value?.let {
+                            adapter.data = it
+                            adapter.notifyDataSetChanged()
+                        }
+
+                        true
+                    }
+                    R.id.show_old -> {
+
+                        viewModel.oldAsteroids?.let {
+                            if (it.isNotEmpty() or (it == viewModel.newAsteroids.value)) {
+                                adapter.data = it
+                                adapter.notifyDataSetChanged()
+                            } else {
+                                Toast.makeText(activity,"No Saved Asteroids",Toast.LENGTH_LONG).show()
+                            }
+                        }
+
+                        true
+                    }
+                    else -> false
+                }
+            }
+
+        })
     }
 
 
