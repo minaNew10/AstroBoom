@@ -1,7 +1,6 @@
 package com.minabeshara.astroboom.main
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -11,13 +10,14 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.minabeshara.astroboom.R
 import com.minabeshara.astroboom.databinding.FragmentMainBinding
-import com.minabeshara.astroboom.utils.parseAsteroidsJsonResult
-import org.json.JSONObject
 
 class MainFragment : Fragment() {
 
 
-    private val viewModel: MainViewModel by viewModels()
+    private val viewModel: MainViewModel by viewModels {
+        val activity = requireNotNull(activity)
+        MainViewModel.ViewModelFactory(activity.application)
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
@@ -26,7 +26,7 @@ class MainFragment : Fragment() {
             DataBindingUtil.inflate(layoutInflater, R.layout.fragment_main, container, false)
 
 
-        viewModel.imageOfDay.observe(viewLifecycleOwner) {
+        viewModel.pictureOfDay.observe(viewLifecycleOwner) {
             binding.image = it
         }
 
@@ -42,13 +42,16 @@ class MainFragment : Fragment() {
             viewModel.onAsteroidClicked(asteroid)
         })
         binding.asteroidRecycler.adapter = adapter
-        viewModel.response.observe(viewLifecycleOwner) {
-            Log.i("TAG", "onCreateView: $it")
-            val list = parseAsteroidsJsonResult(JSONObject(it))
-            viewModel.hideProgressDialog()
-            adapter.data = list
+
+
+        viewModel.asteroids.observe(viewLifecycleOwner) {
+            if (it.isNotEmpty()) {
+                viewModel.hideProgressDialog()
+                adapter.data = it
+            }
+            adapter.notifyDataSetChanged()
         }
-        viewModel.progressDialogVisibilty.observe(viewLifecycleOwner) { visible ->
+        viewModel.progressDialogVisibility.observe(viewLifecycleOwner) { visible ->
             if (visible) {
                 binding.statusLoadingWheel.visibility = View.VISIBLE
             } else {

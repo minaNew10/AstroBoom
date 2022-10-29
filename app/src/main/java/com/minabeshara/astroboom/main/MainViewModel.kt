@@ -1,82 +1,59 @@
 package com.minabeshara.astroboom.main
 
-import android.util.Log
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
-import com.minabeshara.astroboom.BuildConfig
-import com.minabeshara.astroboom.api.NasaApi
+import android.app.Application
+import androidx.lifecycle.*
+import com.minabeshara.astroboom.database.getDatabase
 import com.minabeshara.astroboom.model.Asteroid
-import com.minabeshara.astroboom.model.PictureOfDay
-import com.minabeshara.astroboom.utils.Constants
+import com.minabeshara.astroboom.repository.AsteroidsRepository
 import kotlinx.coroutines.launch
-import java.text.SimpleDateFormat
-import java.util.*
 
-class MainViewModel : ViewModel() {
-    private val _response = MutableLiveData<String>()
+class MainViewModel(app: Application) : ViewModel() {
 
-    val response: LiveData<String>
-        get() = _response
+    private val asteroidsRepository = AsteroidsRepository(getDatabase(app))
 
-    private val _imageOfDay = MutableLiveData<PictureOfDay>()
+    val asteroids = asteroidsRepository.asteroids
 
-    val imageOfDay: LiveData<PictureOfDay>
-        get() = _imageOfDay
+    val pictureOfDay = asteroidsRepository.pictureOfDay
 
     private val _navigateToAsteroidDetails = MutableLiveData<Asteroid?>()
     val navigateToAsteroidDetails
         get() = _navigateToAsteroidDetails
 
-    private val _progressDialogVisibilty= MutableLiveData<Boolean>()
-    val progressDialogVisibilty
-        get() = _progressDialogVisibilty
+    private val _progressDialogVisibility= MutableLiveData<Boolean>()
+    val progressDialogVisibility
+        get() = _progressDialogVisibility
 
     init {
-        getAsteroids()
-        getImageOfDay()
         viewProgressDialog()
+        viewModelScope.launch {
+            asteroidsRepository.refreshAsteroids()
+            asteroidsRepository.refreshPictureOfDay()
+        }
     }
-    fun viewProgressDialog(){
-        _progressDialogVisibilty.value = true
+    private fun viewProgressDialog(){
+        _progressDialogVisibility.value = true
     }
     fun hideProgressDialog(){
-        _progressDialogVisibilty.value = false
+        _progressDialogVisibility.value = false
     }
 
-    private fun getAsteroids(){
-        val calendar = Calendar.getInstance()
-        val currentTime = calendar.time
-        val dateFormat = SimpleDateFormat(Constants.API_QUERY_DATE_FORMAT, Locale.getDefault())
-        val today = dateFormat.format(currentTime)
-        calendar.add(Calendar.DAY_OF_YEAR, 7)
-        val endDayTime = calendar.time
-        val endDay = dateFormat.format(endDayTime)
-        viewModelScope.launch {
-            val jsonResult = NasaApi.retrofitService.getAsteroids(
-                BuildConfig.API_KEY,
-                today,
-                endDay
-            )
-            Log.i("TAG", "getAsteroids: ")
-            _response.value = jsonResult
-        }
-    }
 
-    private fun getImageOfDay(){
-        viewModelScope.launch {
-            _imageOfDay.value  = NasaApi.retrofitService.getImageOfDay(
-                BuildConfig.API_KEY
-            )
-        }
-    }
+
 
     fun onAsteroidClicked(asteroid: Asteroid){
         _navigateToAsteroidDetails.value = asteroid
     }
     fun onAsteroidDetailsNavigated() {
         _navigateToAsteroidDetails.value = null
+    }
+    class ViewModelFactory(val app: Application) : ViewModelProvider.Factory {
+        override fun <T : ViewModel> create(modelClass: Class<T>): T {
+            if (modelClass.isAssignableFrom(MainViewModel::class.java)) {
+                @Suppress("UNCHECKED_CAST")
+                return MainViewModel(app) as T
+            }
+            throw IllegalArgumentException("Unable to construct viewmodel")
+        }
     }
 
 }

@@ -2,7 +2,6 @@ package com.minabeshara.astroboom.api
 
 import com.minabeshara.astroboom.model.PictureOfDay
 import com.minabeshara.astroboom.utils.Constants.BASE_URL
-import com.minabeshara.astroboom.utils.QueryConverterFactory
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import retrofit2.Retrofit
@@ -31,7 +30,7 @@ interface NasaApiService{
     ) : String
 
     @GET("planetary/apod")
-    suspend fun getImageOfDay(
+    suspend fun getPictureOfDay(
         @Query("api_key") api_key :String
     ) : PictureOfDay
 }
