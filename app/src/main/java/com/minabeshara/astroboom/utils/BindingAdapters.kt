@@ -4,16 +4,17 @@ import com.minabeshara.astroboom.R
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.databinding.BindingAdapter
+import com.minabeshara.astroboom.model.PictureOfDay
 import com.squareup.picasso.Picasso
 
 @BindingAdapter("statusIcon")
 fun bindAsteroidStatusImage(imageView: ImageView, isHazardous: Boolean) {
     if (isHazardous) {
         imageView.setImageResource(R.drawable.ic_status_potentially_hazardous)
-        imageView.contentDescription = R.string.potentially_hazardous_asteroid_image.toString()
+        imageView.contentDescription = imageView.context.getString(R.string.potentially_hazardous_asteroid_image)
     } else {
         imageView.setImageResource(R.drawable.ic_status_normal)
-        imageView.contentDescription = R.string.not_hazardous_asteroid_image.toString()
+        imageView.contentDescription = imageView.context.getString(R.string.not_hazardous_asteroid_image)
     }
 }
 
@@ -21,10 +22,10 @@ fun bindAsteroidStatusImage(imageView: ImageView, isHazardous: Boolean) {
 fun bindDetailsStatusImage(imageView: ImageView, isHazardous: Boolean) {
     if (isHazardous) {
         imageView.setImageResource(R.drawable.asteroid_hazardous)
-        imageView.contentDescription = R.string.potentially_hazardous_asteroid_image.toString()
+        imageView.contentDescription = imageView.context.getString(R.string.potentially_hazardous_asteroid_image)
     } else {
         imageView.setImageResource(R.drawable.asteroid_safe)
-        imageView.contentDescription = R.string.not_hazardous_asteroid_image.toString()
+        imageView.contentDescription = imageView.context.getString(R.string.not_hazardous_asteroid_image)
     }
 }
 
@@ -48,11 +49,15 @@ fun bindTextViewToDisplayVelocity(textView: TextView, number: Double) {
     textView.text = String.format(context.getString(R.string.km_s_unit_format), number)
 }
 
-@BindingAdapter("imageUrl")
-fun bindImageOfDay(imgView: ImageView?, imgUrl: String?) {
-    imgUrl?.let {
-        Picasso.with(imgView?.context)
-            .load(imgUrl)
-            .into(imgView)
+@BindingAdapter("image")
+fun bindImageOfDay(imgView: ImageView?, img: PictureOfDay?) {
+    img?.let {
+        if(it.mediaType == "image") {
+            Picasso.with(imgView?.context)
+                .load(it.url)
+                .into(imgView)
+        }else{
+            imgView?.setImageResource(R.drawable.placeholder_picture_of_day)
+        }
     }
 }

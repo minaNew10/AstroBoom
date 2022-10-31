@@ -29,9 +29,9 @@
                 android:id="@+id/activity_main_image_of_the_day"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                imageUrl="@{image.url}"
+                image="@{image}"
                 android:adjustViewBounds="true"
-                android:contentDescription="@string/nasa_picture_of_day_content_description_format"
+                android:contentDescription="@{image.title}"
                 android:scaleType="centerCrop"
                 app:srcCompat="@drawable/placeholder_picture_of_day"/>
 

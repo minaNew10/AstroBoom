@@ -11,6 +11,9 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.minabeshara.astroboom.R
 import com.minabeshara.astroboom.databinding.FragmentMainBinding
+import com.minabeshara.astroboom.utils.Constants
+import java.text.SimpleDateFormat
+import java.util.*
 
 class MainFragment : Fragment() {
 
@@ -54,6 +57,13 @@ class MainFragment : Fragment() {
                 adapter.notifyDataSetChanged()
             }
         }
+        viewModel.asteroidsInDay.observe(viewLifecycleOwner) {
+            if (it.isNotEmpty()) {
+                viewModel.hideProgressDialog()
+                adapter.data = it
+                adapter.notifyDataSetChanged()
+            }
+        }
         viewModel.progressDialogVisibility.observe(viewLifecycleOwner) { visible ->
             if (visible) {
                 binding.statusLoadingWheel.visibility = View.VISIBLE
@@ -75,31 +85,29 @@ class MainFragment : Fragment() {
             override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
                 return when (menuItem.itemId) {
                     R.id.show_new -> {
-                        viewModel.newAsteroids.value?.let {
-                            adapter.data = it
-                            adapter.notifyDataSetChanged()
-                        }
-
+                        viewModel.getAsteroidsInDay(getToday())
                         true
                     }
                     R.id.show_old -> {
-
-                        viewModel.oldAsteroids?.let {
-                            if (it.isNotEmpty() or (it == viewModel.newAsteroids.value)) {
+                            viewModel.newAsteroids.value?.let {
                                 adapter.data = it
                                 adapter.notifyDataSetChanged()
-                            } else {
-                                Toast.makeText(activity,"No Saved Asteroids",Toast.LENGTH_LONG).show()
                             }
+                            true
                         }
 
-                        true
-                    }
                     else -> false
                 }
             }
 
         })
+    }
+
+    fun getToday() : String{
+        val calendar = Calendar.getInstance()
+        val currentTime = calendar.time
+        val dateFormat = SimpleDateFormat(Constants.API_QUERY_DATE_FORMAT, Locale.getDefault())
+        return dateFormat.format(currentTime)
     }
 
 

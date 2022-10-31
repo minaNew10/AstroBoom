@@ -17,8 +17,15 @@ import java.util.*
 
 class AsteroidsRepository(private val database: AsteroidsDatabase) {
     val asteroids: LiveData<List<Asteroid>> = database.asteroidDao.getAsteroids()
+
     var oldAsteroids : List<Asteroid>? = mutableListOf()
     val pictureOfDay : LiveData<PictureOfDay> = database.asteroidDao.getPictureOfDay()
+    suspend fun getAsteroidsInDay(day : String) : List<Asteroid>{
+        return withContext(Dispatchers.IO){
+            database.asteroidDao.getDayAsteroids(day)
+        }
+    }
+
     suspend fun refreshAsteroids() {
         val calendar = Calendar.getInstance()
         val currentTime = calendar.time
